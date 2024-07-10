@@ -35,14 +35,14 @@ public class LectureController {
                                            Errors errors) {
         //입력값 검증 오류가 있다면 400 오류 발생
         if(errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
+            return getErrors(errors);
         }
 
         //사용자정의 Validator  호출
         lectureValidator.validate(lectureReqDto, errors);
         //Biz 검증 있다면 400 오류 발생
         if(errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
+            return getErrors(errors);
         }
         
         //ReqDto => Entity 변환
@@ -52,5 +52,9 @@ public class LectureController {
         WebMvcLinkBuilder selfLinkBuilder = WebMvcLinkBuilder.linkTo(LectureController.class).slash(addLecture.getId());
         URI createUri = selfLinkBuilder.toUri();
         return ResponseEntity.created(createUri).body(addLecture);
+    }
+
+    private static ResponseEntity<?> getErrors(Errors errors) {
+        return ResponseEntity.badRequest().body(errors);
     }
 }
