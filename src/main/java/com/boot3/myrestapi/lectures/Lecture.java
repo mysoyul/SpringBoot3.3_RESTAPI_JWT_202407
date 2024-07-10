@@ -1,6 +1,14 @@
 package com.boot3.myrestapi.lectures;
 
+import lombok.*;
+
 import java.time.LocalDateTime;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter @Setter
+@EqualsAndHashCode(of="id")
 
 public class Lecture {
     private Integer id;
