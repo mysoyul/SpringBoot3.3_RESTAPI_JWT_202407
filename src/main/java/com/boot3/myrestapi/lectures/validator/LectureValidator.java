@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @Component
 public class LectureValidator {
 	public void validate(LectureReqDto lectureReqDto, Errors errors) {
-		//maxPrice 0 보다 크면 maxPrice > basePrice 보다 커야 함
+		//maxPrice 0 보다 크면 basePrice > maxPrice 크면 오류 발생
 		if(lectureReqDto.getBasePrice() > lectureReqDto.getMaxPrice() &&
 				lectureReqDto.getMaxPrice() != 0) {
 			//Field Error
-			errors.rejectValue("basePrice", "wrongValue", "BasePrice is wrong");
-			errors.rejectValue("maxPrice", "wrongValue", "MaxPrice is wrong");
+			errors.rejectValue("basePrice", "wrongPrice", "BasePrice is wrong");
+			errors.rejectValue("maxPrice", "wrongPrice", "MaxPrice is wrong");
 			//Global Error
 			errors.reject("wrongPrices", "BasePrice가 MaxPrice 보다 더 작은 값이어야 합니다.");
 		}
@@ -25,7 +25,7 @@ public class LectureValidator {
 		if(endLectureDateTime.isBefore(lectureReqDto.getBeginLectureDateTime()) ||
 		   endLectureDateTime.isBefore(lectureReqDto.getCloseEnrollmentDateTime()) ||
 		   endLectureDateTime.isBefore(lectureReqDto.getBeginEnrollmentDateTime()) ) {
-			errors.rejectValue("endLectureDateTime", "wrongValue",
+			errors.rejectValue("endLectureDateTime", "wrongDateTime",
 					"endLectureDateTime(강의종료날짜)를 확인하세요!");
 		}
 		
@@ -35,7 +35,7 @@ public class LectureValidator {
 		if(beginLectureDateTime.isBefore(lectureReqDto.getCloseEnrollmentDateTime()) ||
 		   beginLectureDateTime.isBefore(lectureReqDto.getBeginEnrollmentDateTime()) ||
 		   beginLectureDateTime.isAfter(lectureReqDto.getEndLectureDateTime())) {
-			errors.rejectValue("beginLectureDateTime", "wrongValue",
+			errors.rejectValue("beginLectureDateTime", "wrongDateTime",
 					"beginLectureDateTime(강의시작날짜)를 확인하세요!");
 		}
 	}
