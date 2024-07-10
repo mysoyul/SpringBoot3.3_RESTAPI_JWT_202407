@@ -13,6 +13,7 @@ import java.net.URI;
 @RestController
 @RequestMapping(value = "/api/lectures", produces = MediaTypes.HAL_JSON_VALUE)
 public class LectureController {
+
     @PostMapping
     public ResponseEntity<?> createLecture(@RequestBody Lecture lecture) {
         lecture.setId(10);
