@@ -51,7 +51,9 @@ public class LectureController {
         lecture.update();
         Lecture addLecture = this.lectureRepository.save(lecture);
 
-        WebMvcLinkBuilder selfLinkBuilder = WebMvcLinkBuilder.linkTo(LectureController.class).slash(addLecture.getId());
+        WebMvcLinkBuilder selfLinkBuilder = WebMvcLinkBuilder
+                .linkTo(LectureController.class)
+                .slash(addLecture.getId());
         URI createUri = selfLinkBuilder.toUri();
         return ResponseEntity.created(createUri).body(addLecture);
     }
