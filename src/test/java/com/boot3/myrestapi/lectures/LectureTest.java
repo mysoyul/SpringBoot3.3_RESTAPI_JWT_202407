@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class LectureTest {
     @Test
     public void builder() {
-        Lecture lecture = Lecture.builder()
+        Lecture lecture = Lecture.builder()  //LectureBuilder
                 .name("Spring REST API")
-                .description("REST API developmemt with Spring")
+                .description("REST API development with Spring")
                 .build();
         assertEquals("Spring REST API", lecture.getName());
     }
