@@ -6,6 +6,8 @@ import com.boot3.myrestapi.lectures.dto.LectureReqDto;
 import com.boot3.myrestapi.lectures.dto.LectureResDto;
 import com.boot3.myrestapi.lectures.dto.LectureResource;
 import com.boot3.myrestapi.lectures.validator.LectureValidator;
+import com.boot3.myrestapi.security.userinfos.CurrentUser;
+import com.boot3.myrestapi.security.userinfos.UserInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -107,7 +109,8 @@ public class LectureController {
 
     @PostMapping
     public ResponseEntity<?> createLecture(@RequestBody @Valid LectureReqDto lectureReqDto,
-                                           Errors errors) {
+                                           Errors errors,
+                                           @CurrentUser UserInfo currentUser) {
         //입력값 검증 오류가 있다면 400 오류 발생
         if(errors.hasErrors()) {
             return getErrors(errors);
@@ -124,9 +127,16 @@ public class LectureController {
         Lecture lecture = modelMapper.map(lectureReqDto, Lecture.class);
         //free와 offline 값을 update
         lecture.update();
+
+        //Lecture와 UserInfo 연관관계 설정
+        lecture.setUserInfo(currentUser);
+
         Lecture addLecture = this.lectureRepository.save(lecture);
         //Entity => ResDto 변환
         LectureResDto lectureResDto = modelMapper.map(addLecture, LectureResDto.class);
+
+        //LectureResDto 에 UserInfo 객체의 email set
+        lectureResDto.setEmail(addLecture.getUserInfo().getEmail());
 
         WebMvcLinkBuilder selfLinkBuilder = linkTo(LectureController.class)
                 .slash(addLecture.getId());
