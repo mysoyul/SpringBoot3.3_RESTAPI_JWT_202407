@@ -48,7 +48,9 @@ public class LectureController {
                                         PagedResourcesAssembler<LectureResDto> assembler) {
         Page<Lecture> page = this.lectureRepository.findAll(pageable);
         Page<LectureResDto> lectureResDtoPage = page.map(lecture -> modelMapper.map(lecture, LectureResDto.class));
-        PagedModel<EntityModel<LectureResDto>> pagedResources = assembler.toModel(lectureResDtoPage);
+        //PagedModel<EntityModel<LectureResDto>> pagedResources = assembler.toModel(lectureResDtoPage);
+        //assembler.toModel(lectureResDtoPage, resDto -> new LectureResource(resDto));
+        PagedModel<LectureResource> pagedResources = assembler.toModel(lectureResDtoPage, LectureResource::new);
         return ResponseEntity.ok(pagedResources);
     }
 
