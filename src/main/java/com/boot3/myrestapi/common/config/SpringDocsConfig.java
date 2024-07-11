@@ -17,9 +17,9 @@ public class SpringDocsConfig {
     public OpenAPI openAPI() {
 
         Info info = new Info()
-                .title("Lecture API 문서") // 타이틀
+                .title("Lectures API 문서") // 타이틀
                 //.version(version) // 문서 버전
-                .description("Lecture API 등록/수정/조회 문서입니다.") // 문서 설명
+                .description("Lectures API 등록/수정/조회 문서입니다.") // 문서 설명
                 .contact(new Contact() // 연락처
                         .name("SpringBoot")
                         .email("admin@aa.com"));
