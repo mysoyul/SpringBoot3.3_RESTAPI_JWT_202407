@@ -68,7 +68,7 @@ public class LectureController {
         return ResponseEntity.created(createUri).body(lectureResource);
     }
 
-    private static ResponseEntity<?> getErrors(Errors errors) {
+    private static ResponseEntity<ErrorsResource> getErrors(Errors errors) {
         return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
 }
