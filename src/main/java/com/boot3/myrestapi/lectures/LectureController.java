@@ -76,22 +76,25 @@ public class LectureController {
     public ResponseEntity<?> updateLecture(@PathVariable Integer id,
                                         @RequestBody @Valid LectureReqDto lectureReqDto,
                                         Errors errors) {
-        Optional<Lecture> optionalLecture = this.lectureRepository.findById(id);
 
         String errMsg = String.format("Id = %d Lecture Not Found", id);
-        Lecture existingLecture =
-                optionalLecture.orElseThrow(() -> new BusinessException(errMsg, HttpStatus.NOT_FOUND));
+        Lecture existingLecture = this.lectureRepository.findById(id)
+                        .orElseThrow(() -> new BusinessException(errMsg, HttpStatus.NOT_FOUND));
 
+        //입력항목 체크
         if (errors.hasErrors()) {
             return getErrors(errors);
         }
+        //biz logic 입력항목 체크
         lectureValidator.validate(lectureReqDto, errors);
         if (errors.hasErrors()) {
             return getErrors(errors);
         }
-
+        //ReqDto -> Entity
         this.modelMapper.map(lectureReqDto, existingLecture);
+        //free, offline 값 업데이트
         existingLecture.update();
+
         Lecture savedLecture = this.lectureRepository.save(existingLecture);
         LectureResDto lectureResDto = modelMapper.map(savedLecture, LectureResDto.class);
 
