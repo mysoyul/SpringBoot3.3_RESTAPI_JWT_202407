@@ -66,16 +66,16 @@ public class JwtService {
             return true;
         } catch (Exception ex) {
             throw new AuthenticationCredentialsNotFoundException(
-                    "JWT was exprired or incorrect",
+                    "JWT was expired or incorrect",
                     ex.fillInStackTrace());
         }
     }
-
+    //token 생성
     public String generateToken(String userName){
         // ACCESS_EXPIRE 3600초 => 60분
         Date exprireDate = Date.from(Instant.now().plusSeconds(ACCESS_EXPIRE));
 
-        return Jwts.builder()
+        return Jwts.builder() //JwtBuilder
                 .signWith(KEY, ALGORITHM)
                 .subject(userName)
                 .issuedAt(new Date())
