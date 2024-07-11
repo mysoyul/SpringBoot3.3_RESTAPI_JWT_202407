@@ -6,7 +6,8 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
+//@Getter @Setter @ToString
+@Data
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

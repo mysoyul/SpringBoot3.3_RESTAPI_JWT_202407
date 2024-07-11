@@ -21,7 +21,9 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,6 +70,7 @@ public class LectureController {
         LectureResource lectureResource = new LectureResource(lectureResDto);
         //인증토큰의 email과 Lecture가 참조하는 email주소가 같으면 update 링크를 제공하기
         if ((lecture.getUserInfo() != null) && (lecture.getUserInfo().equals(currentUser))) {
+        //if ((lecture.getUserInfo() != null) && (lecture.getUserInfo() == currentUser)) {
             lectureResource.add(linkTo(LectureController.class)
                     .slash(lecture.getId()).withRel("update-lecture"));
         }
@@ -102,12 +105,19 @@ public class LectureController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateLecture(@PathVariable Integer id,
-                                        @RequestBody @Valid LectureReqDto lectureReqDto,
-                                        Errors errors) {
+                                           @RequestBody @Valid LectureReqDto lectureReqDto,
+                                           Errors errors,
+                                           @CurrentUser UserInfo currentUser  ) {
 
         String errMsg = String.format("Id = %d Lecture Not Found", id);
         Lecture existingLecture = this.lectureRepository.findById(id)
                         .orElseThrow(() -> new BusinessException(errMsg, HttpStatus.NOT_FOUND));
+
+        //Lecture가 참조하는 UserInfo 객체와 인증한 UserInfo 객체가 다르면 403 인증 오류
+        if((existingLecture.getUserInfo() != null) && (!existingLecture.getUserInfo().equals(currentUser))) {
+            throw new AccessDeniedException("등록한 User와 수정을 요청한 User가 다릅니다.");
+            //return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
 
         //입력항목 체크
         if (errors.hasErrors()) {
@@ -125,6 +135,9 @@ public class LectureController {
 
         Lecture savedLecture = this.lectureRepository.save(existingLecture);
         LectureResDto lectureResDto = modelMapper.map(savedLecture, LectureResDto.class);
+        //Lecture 객체와 연관된 UserInfo 객체가 있다면 LectureResDto에 email을 set
+        if(savedLecture.getUserInfo() != null)
+            lectureResDto.setEmail(savedLecture.getUserInfo().getEmail());
 
         LectureResource lectureResource = new LectureResource(lectureResDto);
         return ResponseEntity.ok(lectureResource);
