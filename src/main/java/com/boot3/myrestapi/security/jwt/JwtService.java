@@ -1,4 +1,4 @@
-package com.boot3.myrestapi.security.userinfos.jwt;
+package com.boot3.myrestapi.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

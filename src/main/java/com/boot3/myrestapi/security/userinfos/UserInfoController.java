@@ -1,6 +1,6 @@
 package com.boot3.myrestapi.security.userinfos;
 
-import com.boot3.myrestapi.security.userinfos.jwt.JwtService;
+import com.boot3.myrestapi.security.jwt.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
