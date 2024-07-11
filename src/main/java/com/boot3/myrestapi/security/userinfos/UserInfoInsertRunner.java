@@ -19,15 +19,13 @@ public class UserInfoInsertRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         UserInfo userInfo = new UserInfo();
         userInfo.setName("adminboot");
-        userInfo.setPassword(
-                passwordEncoder.encode("pwd1"));
+        userInfo.setPassword(passwordEncoder.encode("pwd1"));
         userInfo.setEmail("admin@aa.com");
         userInfo.setRoles("ROLE_ADMIN,ROLE_USER");
 
         UserInfo userInfo2 = new UserInfo();
         userInfo2.setName("userboot");
-        userInfo2.setPassword(
-                passwordEncoder.encode("pwd2"));
+        userInfo2.setPassword(passwordEncoder.encode("pwd2"));
         userInfo2.setEmail("user@aa.com");
         userInfo2.setRoles("ROLE_USER");
 
