@@ -72,6 +72,33 @@ public class LectureController {
         return ResponseEntity.ok(pagedResources);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateLecture(@PathVariable Integer id,
+                                        @RequestBody @Valid LectureReqDto lectureReqDto,
+                                        Errors errors) {
+        Optional<Lecture> optionalLecture = this.lectureRepository.findById(id);
+
+        String errMsg = String.format("Id = %d Lecture Not Found", id);
+        Lecture existingLecture =
+                optionalLecture.orElseThrow(() -> new BusinessException(errMsg, HttpStatus.NOT_FOUND));
+
+        if (errors.hasErrors()) {
+            return getErrors(errors);
+        }
+        lectureValidator.validate(lectureReqDto, errors);
+        if (errors.hasErrors()) {
+            return getErrors(errors);
+        }
+
+        this.modelMapper.map(lectureReqDto, existingLecture);
+        existingLecture.update();
+        Lecture savedLecture = this.lectureRepository.save(existingLecture);
+        LectureResDto lectureResDto = modelMapper.map(savedLecture, LectureResDto.class);
+
+        LectureResource lectureResource = new LectureResource(lectureResDto);
+        return ResponseEntity.ok(lectureResource);
+    }
+
     @PostMapping
     public ResponseEntity<?> createLecture(@RequestBody @Valid LectureReqDto lectureReqDto,
                                            Errors errors) {
