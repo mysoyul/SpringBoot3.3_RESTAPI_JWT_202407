@@ -1,14 +1,12 @@
 package com.boot3.myrestapi.security.userinfos;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter @Setter
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
