@@ -74,7 +74,7 @@ public class DefaultExceptionAdvice {
 
     //403 예외 발생
     @ExceptionHandler(value = AccessDeniedException.class)
-    public void accessDeniedExceptionHandler(Exception e) {
+    public void accessDeniedExceptionHandler(AccessDeniedException e) {
         throw new AccessDeniedException(e.getMessage());
     }
 }
