@@ -68,12 +68,26 @@ public class LectureController {
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> queryLectures(Pageable pageable,
-                                        PagedResourcesAssembler<LectureResDto> assembler) {
+                                           PagedResourcesAssembler<LectureResDto> assembler,
+                                           @CurrentUser UserInfo currentUser) {
         Page<Lecture> page = this.lectureRepository.findAll(pageable);
-        Page<LectureResDto> lectureResDtoPage = page.map(lecture -> modelMapper.map(lecture, LectureResDto.class));
+        //Page<LectureResDto> lectureResDtoPage = page.map(lecture -> modelMapper.map(lecture, LectureResDto.class));
+        Page<LectureResDto> lectureResDtoPage =
+                page.map(lecture -> {
+                    LectureResDto lectureResDto = new LectureResDto();
+                    if (lecture.getUserInfo() != null) {
+                        lectureResDto.setEmail(lecture.getUserInfo().getEmail());
+                    }
+                    modelMapper.map(lecture, lectureResDto);
+                    return lectureResDto;
+                });
         //PagedModel<EntityModel<LectureResDto>> pagedResources = assembler.toModel(lectureResDtoPage);
         //assembler.toModel(lectureResDtoPage, resDto -> new LectureResource(resDto));
         PagedModel<LectureResource> pagedResources = assembler.toModel(lectureResDtoPage, LectureResource::new);
+
+        if (currentUser != null) {
+            pagedResources.add(linkTo(LectureController.class).withRel("create-Lecture"));
+        }
         return ResponseEntity.ok(pagedResources);
     }
 
