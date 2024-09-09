@@ -24,6 +24,7 @@ public class JwtService {
     public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
     public static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
     private final static SecureDigestAlgorithm<SecretKey, SecretKey> ALGORITHM = Jwts.SIG.HS256;
+    //초 단위
     public static final int ACCESS_EXPIRE = 3600;
 
     private Claims extractAllClaims(String token) {
@@ -73,7 +74,9 @@ public class JwtService {
     //token 생성
     public String generateToken(String userName){
         // ACCESS_EXPIRE 3600초 => 60분
-        Date exprireDate = Date.from(Instant.now().plusSeconds(ACCESS_EXPIRE));
+        Date exprireDate = Date.from(Instant.now()
+                .plusSeconds(30));
+                //.plusSeconds(ACCESS_EXPIRE));
 
         return Jwts.builder() //JwtBuilder
                 .signWith(KEY, ALGORITHM)

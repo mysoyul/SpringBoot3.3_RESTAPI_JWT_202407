@@ -1,6 +1,10 @@
 package com.boot3.myrestapi.security.userinfos;
 
 import com.boot3.myrestapi.security.jwt.JwtService;
+import com.boot3.myrestapi.security.jwt.RefreshTokenService;
+import com.boot3.myrestapi.security.userinfos.dto.AuthRequest;
+import com.boot3.myrestapi.security.userinfos.dto.JwtResponse;
+import com.boot3.myrestapi.security.userinfos.dto.RefreshTokenRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +26,9 @@ public class UserInfoController {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     @GetMapping("/welcome")
     public String welcome() {
         return "Welcome this endpoint is not secure";
@@ -35,16 +42,35 @@ public class UserInfoController {
     }
 
     @PostMapping("/login")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+    public JwtResponse authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authRequest.getEmail(),
                         authRequest.getPassword()
                 ));
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getEmail());
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getEmail());
+            return JwtResponse.builder()
+                    .accessToken(jwtService.generateToken(authRequest.getEmail()))
+                    .token(refreshToken.getToken()).build();
+//            return jwtService.generateToken(authRequest.getEmail());
         } else {
             throw new UsernameNotFoundException("invalid user request !");
         }
+    }
+
+    @PostMapping("/refreshToken")
+    public JwtResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return refreshTokenService.findByToken(refreshTokenRequest.getToken())
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUserInfo)
+                .map(userInfo -> {
+                    String accessToken = jwtService.generateToken(userInfo.getEmail());
+                    return JwtResponse.builder()
+                            .accessToken(accessToken)
+                            .token(refreshTokenRequest.getToken())
+                            .build();
+                }).orElseThrow(() -> new RuntimeException(
+                        "Refresh token is not in database!"));
     }
 }

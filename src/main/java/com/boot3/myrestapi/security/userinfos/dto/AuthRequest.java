@@ -1,4 +1,4 @@
-package com.boot3.myrestapi.security.userinfos;
+package com.boot3.myrestapi.security.userinfos.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
