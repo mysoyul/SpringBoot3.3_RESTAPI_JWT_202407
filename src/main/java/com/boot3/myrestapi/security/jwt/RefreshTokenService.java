@@ -1,8 +1,10 @@
 package com.boot3.myrestapi.security.jwt;
 
 import com.boot3.myrestapi.security.userinfos.RefreshToken;
+import com.boot3.myrestapi.security.userinfos.UserInfo;
 import com.boot3.myrestapi.security.userinfos.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,12 +20,20 @@ public class RefreshTokenService {
     private UserInfoRepository userInfoRepository;
 
     public RefreshToken createRefreshToken(String username) {
-        RefreshToken refreshToken = RefreshToken.builder()
-                .userInfo(userInfoRepository.findByEmail(username).get())
-                .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(600000))//10분 - 600000, 1분 - 60000
-                .build();
-        return refreshTokenRepository.save(refreshToken);
+        UserInfo userInfo = userInfoRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found " + username));
+
+        //Refresh_token 이 있으면
+        return refreshTokenRepository.findByUserInfo(userInfo)
+                //Refresh_token 이 없으면
+                .orElseGet(() -> {
+                    RefreshToken refreshToken = RefreshToken.builder()
+                            .userInfo(userInfo)
+                            .token(UUID.randomUUID().toString())
+                            .expiryDate(Instant.now().plusMillis(600000))//10분 - 600000, 1분 - 60000
+                            .build();
+                    return refreshTokenRepository.save(refreshToken);
+                });
     }
 
 
